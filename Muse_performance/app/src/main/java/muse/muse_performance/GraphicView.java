@@ -83,13 +83,11 @@ public class GraphicView extends View
 	private ScheduledExecutorService ses = null;
 
 	//波生成変数
-	static private int graWidth = 10; // グラデーション1段階の幅
-	static final int wR = 0;			// 水の最も暗い色
-	static final int wG = 136;
-	static final int wB = 227;
-	static final int rGap = 60 /2;		// グラデーションの変化幅
-	static final int gGap = 50 /2;
-	static final int bGap = 20 /2;
+	static private int graWidth = 2; // グラデーション1段階の幅
+	static private int graLevel = 13;
+	static final int wR = 148;			// 水の最も暗い色
+	static final int wG = 213;
+	static final int wB = 225;
 
 	//半径の最大値
 	private int overR = sqrt(x  * x + y * y);
@@ -312,8 +310,12 @@ public class GraphicView extends View
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
+		//グラデーションの色の差の値
+		int colorGap;
+
 		//背景色の設定
-		canvas.drawColor( Color.rgb( wR , wG, wB ) );
+		colorGap = graWidth * graLevel;
+		canvas.drawColor( Color.rgb( wR - colorGap, wG - colorGap, wB - colorGap ) );
 
 		//Paintオブジェクトの生成
 		Paint paint = new Paint();
@@ -321,34 +323,27 @@ public class GraphicView extends View
 		// 水面表示
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setStrokeWidth( graWidth );
-		double level;
 
-		for( int i = 0; i*graWidth < r; i++ )
+		// 波紋表示
+		for (int j = -graLevel; j <= graLevel;j ++ )
 		{
-			// 高さ計算 0~2
-			level = Math.sin(  Math.toRadians( 360*( i*graWidth - r%d )/d) + Math.PI/2 ) + 1;
-			// 色指定
-			paint.setColor( Color.rgb( wR + (int)( rGap*level ), wG + (int)( gGap*level ), wB + (int)( bGap*level ) ) );
-			// 表示( 円で )
-			if( i == 0 )
-			{
-				// 真ん中塗りつぶし
-				paint.setStyle(Paint.Style.FILL);
-
-				canvas.drawCircle(x, y, graWidth, paint);
-
-				paint.setStyle(Paint.Style.STROKE);
+			//値計算
+			colorGap = j * graWidth;
+			if(colorGap < 0) colorGap *= -1;
+			//色計算
+			//白
+			paint.setColor( Color.rgb( wR - colorGap, wG - colorGap, wB - colorGap));
+			// 表示
+			//波の数ループ
+			for(int i = 0; i <= r / d; i++) {
+				canvas.drawCircle(x, y, d * i + r % d + j * graWidth, paint);
 			}
-			else canvas.drawCircle(x, y, i * graWidth , paint);
-		}
 
-		/*
-		// タップ波のdebug表示
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setColor( Color.BLACK );
-		for (int i = 0; i < 4; i++) {
-			if (tapCircleR[i] > 0) canvas.drawCircle(fxpoint[i], fypoint[i], tapCircleR[i] + graWidth, paint);
-		}*/
+			for(int i = 0; i < 4; i++) {
+				if(tapCircleR[i] > 0)
+					canvas.drawCircle(fxpoint[i], fypoint[i], tapCircleR[i] + j * graWidth, paint);
+			}
+		}
 
 		// 表画面メニュー
 		if (this.scene)
