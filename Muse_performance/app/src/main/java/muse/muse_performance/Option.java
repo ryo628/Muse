@@ -1,6 +1,7 @@
 package muse.muse_performance;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.app.Activity;
 import android.widget.AdapterView;
@@ -18,7 +19,7 @@ public class Option extends Activity
 	// 曲セレクト
 	private TextView songTextView;
 	private Spinner selectSong;
-	String songItems[] = { "Song1", "Song2","Song3","Song4" };
+	String songItems[] = { "Song1", "Song2","Song3","Song4","Song5" };
 	private int songNo = 0;     // 曲番号(配列添え字)
 
 	// 左上フリックに対応する楽器変更
@@ -165,6 +166,8 @@ public class Option extends Activity
 		melodyInst[2] = intent.getIntExtra("MInst2", 0);
 		melodyInst[3] = intent.getIntExtra("MInst3", 0);
 		beat = intent.getIntExtra("BEAT", 0);
+
+		Log.d("","opt "+melodyInst[1]);
 
 		//曲のドロップダウンメニュー
 		selectSong=(Spinner)findViewById(R.id.songSpinner);
@@ -366,6 +369,7 @@ public class Option extends Activity
 			intent.putExtra("RES_MInst3", melodyInst[3]);
 			intent.putExtra("RES_BEAT", beat);
 			setResult(RESULT_OK,intent);
+			Log.d("","opt "+melodyInst[1]);
 			finish();
 			}
 		});
